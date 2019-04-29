@@ -171,8 +171,20 @@ class CardPointeTest extends TestCase
             'postal'      => "11111",
         ]);
 
-        $this->assertNotEmpty($response['profileid']);
-        $this->assertEquals('A', $response['respstat']);
+        $this->assertNotEmpty($response->profileid);
+        $this->assertEquals('A', $response->respstat);
+    }
+
+    /** @test */
+    public function deletesProfile()
+    {
+        $response = $this->client->createProfile([
+            'account' => "4242424242424242"
+        ]);
+
+        $response = $this->client->deleteProfile($response->profileid);
+
+        $this->assertTrue($response->success());
     }
 
     // @todo more profile service tests

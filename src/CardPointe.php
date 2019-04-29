@@ -5,9 +5,10 @@ namespace Dewbud\CardConnect;
 use Dewbud\CardConnect\Exceptions\CardConnectException;
 use Dewbud\CardConnect\Responses\AuthorizationResponse;
 use Dewbud\CardConnect\Responses\CaptureResponse;
+use Dewbud\CardConnect\Responses\DeleteProfileResponse;
 use Dewbud\CardConnect\Responses\InquireResponse;
+use Dewbud\CardConnect\Responses\ProfileResponse;
 use Dewbud\CardConnect\Responses\RefundResponse;
-use Dewbud\CardConnect\Responses\Response;
 use Dewbud\CardConnect\Responses\SettlementResponse;
 use Dewbud\CardConnect\Responses\VoidResponse;
 use GuzzleHttp\Client;
@@ -256,7 +257,7 @@ class CardPointe
      *
      * @see https://developer.cardconnect.com/cardconnect-api?lang=php#create-update-profile-request
      *
-     * @return array
+     * @return ProfileResponse
      */
     public function createProfile(array $request = [])
     {
@@ -267,7 +268,7 @@ class CardPointe
         $request = array_merge($params, $request);
         $res     = $this->send('PUT', "profile", $request);
 
-        return $this->parseResponse($res);
+        return new ProfileResponse($this->parseResponse($res));
     }
 
     /**
@@ -295,13 +296,13 @@ class CardPointe
      *
      * @see https://developer.cardconnect.com/cardconnect-api?lang=php#delete-profile-request
      *
-     * @return Object
+     * @return DeleteProfileResponse
      */
     public function deleteProfile(string $profile_id, $account_id = null)
     {
         $res = $this->send('DELETE', "profile/$profile_id/$account_id/{$this->merchant_id}");
 
-        return $this->parseResponse($res);
+        return new DeleteProfileResponse($this->parseResponse($res));
     }
 
     protected function validateInput(array $required, array $input)
@@ -332,7 +333,7 @@ class CardPointe
      *
      * @return \GuzzleHttp\Psr7\Response
      */
-    protected function send($verb, $resource, $request = [], $options = [])
+    protected function send($verb, $resource, $request = null, $options = [])
     {
         $res = null;
 
